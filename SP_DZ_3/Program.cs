@@ -19,6 +19,7 @@ namespace SP_DZ_3
        
         static void Main(string[] args)
         {
+            Console.Title = "SP_DZ_3";
             Console.WriteLine("Дя остановки нажмите любую клавишу!");
             Random _random = new Random();
             do

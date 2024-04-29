@@ -27,8 +27,9 @@ namespace SP_DZ_wpf_2
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<MyPath> programs = new List<MyPath>();
+        public ObservableCollection<MyPath> programs = new ObservableCollection<MyPath>();
         public ObservableCollection<string> processes = new ObservableCollection<string>();
+        public MyPath temp_path; 
         //public MyWinApi api = new MyWinApi();
         public IntPtr ptr = IntPtr.Zero;
         public int count_ = 0;
@@ -43,6 +44,7 @@ namespace SP_DZ_wpf_2
         public void GetExe()//получаем все exe данного решения
         {
 
+           //var hh = new FileInfo(Application.ResourceAssembly).FullName;
             //название файла основной папки
             string name_solution = "SP_DZ_1";
             string except = Process.GetCurrentProcess().MainModule.FileName;//запущенная программа
@@ -58,17 +60,22 @@ namespace SP_DZ_wpf_2
 
             //получаем все *.exe файлы из данного решения
             // кроме запускаемого проекта
+            List<MyPath> temp = new List<MyPath>();
             string[] files = Directory.GetFiles(solution, "*.exe", SearchOption.AllDirectories);
             foreach (string file in files)
             {
                 string fileName = new FileInfo(file).FullName;
                 if (fileName.IndexOf(exe_main) == -1)
                 {
-                    programs.Add(new MyPath { short_path = System.IO.Path.GetFileName(fileName), full_path = fileName });
+                    temp.Add(new MyPath { short_path = System.IO.Path.GetFileName(fileName), full_path = fileName });
                 }
 
             }
-            programs = programs.GroupBy(p => p.short_path).Select(p => p.First()).ToList();//убираем дубликаты
+            temp = temp.GroupBy(p => p.short_path).Select(p => p.First()).ToList();//убираем дубликаты
+            foreach (var item in temp)
+            {
+                programs.Add(item);
+            }
             ff.Text = programs[0].full_path;
         }
 
@@ -77,7 +84,10 @@ namespace SP_DZ_wpf_2
             if (ListPrograms.SelectedItems.Count > 0)
             {
                 Process proc = Process.Start(programs[ListPrograms.SelectedIndex].full_path);
+                temp_path = programs[ListPrograms.SelectedIndex];
                 processes.Add(proc.ProcessName);
+                programs.RemoveAt(ListPrograms.SelectedIndex);
+               
                 // ff.Text = proc.MainWindowTitle.ToString();
                 count_++;
             }
@@ -102,7 +112,9 @@ namespace SP_DZ_wpf_2
                 ptr = MyWinApi.FindWindow(null, ListProcesses.SelectedItem.ToString());
                 MyWinApi.SendMessage(ptr, MyWinApi.WM_CLOSE, IntPtr.Zero, "Закрыто");
                 processes.Remove(ListProcesses.SelectedItem.ToString());
+                programs.Add(temp_path);
                 count_--;
+               
             }
             //ff.Text = ptr.ToString();
 

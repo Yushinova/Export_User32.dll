@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace SP_DZ_1
     {
         static void Main(string[] args)
         {
+            Console.Title ="SP_DZ_1";
             AboutMe[] infoAll =
             {
                 new AboutMe {Title="ФИО", Info="Юшинова Татьяна Александровна"},
